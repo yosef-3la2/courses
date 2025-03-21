@@ -40,12 +40,14 @@ class CourseController extends Controller
     public function store(Request $request){
         $request->validate([
             'title'=>'required|string|max:20|min:2',
-            'description'=>'required|string|min:5'
+            'description'=>'required|string|min:5',
+            'price'=>'numeric|required'
         ]);
 
         $course=Course::create([
             'title'=>$request->title,
-            'description'=>$request->description
+            'description'=>$request->description,
+            'price'=>$request->price
         ]);
 
         return response([
@@ -58,7 +60,8 @@ class CourseController extends Controller
     public function update(Request $request,$id){
         $request->validate([
             'title'=>'required|string|max:20|min:2',
-            'description'=>'required|string|min:5'
+            'description'=>'required|string|min:5',
+            'price'=>'numeric|required'
         ]);
 
         $course=Course::find($id);
@@ -70,7 +73,8 @@ class CourseController extends Controller
         }
         $course->update([
             'title'=>$request->title,
-            'description'=>$request->description
+            'description'=>$request->description,
+            'price'=>$request->price
         ]);
         return response([
             'message'=>'course updated successfully',

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Models\CourseInstructor;
+use App\Models\CourseStudent;
 use App\Models\Session;
 use Illuminate\Http\Request;
 
@@ -13,13 +15,42 @@ class SessionController extends Controller
         $this->middleware('instructor')->except(['index']);
     }
 
+
     public function index(){
-        $sessions=Session::all();
+
+        
+        $user=auth()->user();
+        if($user->role=='admin'){
+            $sessions=Session::get();
+        }elseif($user->role=='instructor'){
+            $sessions=Session::where('instructor_id',$user->id)->get();
+        }else{
+            $coursestudent=CourseStudent::where('student_id',$user->id)->get();
+            if($coursestudent->isEmpty()){
+                return response([
+                    'message'=>'you didnt enroll in any course ',
+                    'data'=>null
+                ],400);  
+            }
+
+            $courseIds = $coursestudent->pluck('course_id')->toArray();
+            $instructorIds = $coursestudent->pluck('instructor_id')->toArray();
+            $sessions=Session::wherein('course_id',$courseIds)->wherein('instructor_id', $instructorIds)->get();
+        }
+        if($sessions->isEmpty()){
+            return response([
+                'message'=>'you have no sessions '
+            ],400);  
+        }
+        
+        
         
         return response([
-            'message'=>'courses retreived successfully',
+            'message'=>'sessions retreived successfully',
             'data'=>$sessions
         ],200);
+
+        
 
     }
 
@@ -37,6 +68,16 @@ class SessionController extends Controller
         if(!$user||$user->role!=='instructor'){
             return response(['message'=>'unauthorized'],403 );
         }
+
+        $courseid=$request->course_id;
+        $instructor_id=$user->id;
+        $instructor_is_assigned=CourseInstructor::where('course_id',$courseid)->where('instructor_id',$instructor_id)->exists();
+        if(!$instructor_is_assigned){
+
+            return response(['message'=>'your are not teaching this course please make sure you have chosen the right course'],400);
+        }
+
+
 
         $session=Session::create([
             'title'=>$request->title,
@@ -87,6 +128,8 @@ class SessionController extends Controller
     public function destroy($id){
         $session=Session::find($id);
         $user=auth()->user();
+
+
         if(!$session){
             return response([
                 'message'=>'session not found'

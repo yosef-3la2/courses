@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
 {
-    use HasFactory;
     protected $fillable=[
         'title',
-        'description'
-];
-
-protected $hidden = ['created_at', 'updated_at'];
+        'description',
+        'price'
+    ];
+    
+    protected $hidden = ['created_at', 'updated_at'];
+    use HasFactory;
 }

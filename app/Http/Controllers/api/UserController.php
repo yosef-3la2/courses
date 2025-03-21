@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -71,7 +72,31 @@ class UserController extends Controller
         ],200);
     }
 
-     
+    public function showadmins(){
+        $admins = User::where('role', 'admin')->get();
+        return response([
+            'message'=>'admins retreived successfully',
+            'admins'=>$admins
+        ],200);
+    }
+    
+    
+    public function showinstructors(){
+        $instructors = User::where('role', 'instructor')->get();
+        return response([
+            'message'=>'instructors retreived successfully',
+            'admins'=>$instructors
+        ],200);
+    }
+    
+    
+    public function showstudents(){
+        $students = User::where('role', 'student')->get();
+        return response([
+            'message'=>'students retreived successfully',
+            'admins'=>$students
+        ],200);
+    }
     
     
     

@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('task_id')->constrained('tasks')->onDelete('cascade'); 
             $table->foreignId('student_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('course_instructor_id')->constrained('course_instructor')->onDelete('cascade');
             $table->foreignId('course_id')->constrained('courses')->onDelete('cascade');
             $table->string('file')->nullable();
             $table->string('link')->nullable();
