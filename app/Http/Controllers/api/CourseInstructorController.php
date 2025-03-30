@@ -54,8 +54,17 @@ class CourseInstructorController extends Controller
             ],400);
         }
 
-       
 
+        //making sure that instructor cant be assigned to the same course twice
+        $course_id=$request->course_id;
+        $instructor_id=$request->instructor_id;
+        $instructor_is_assigned=CourseInstructor::where('course_id',$course_id)->where('instructor_id',$instructor_id)->first();
+        if($instructor_is_assigned){
+            return response([
+                'message'=>'this instructor is already assigned to this course',
+                'data'=>$instructor_is_assigned
+            ],400);
+        }
         $courseInstructor=CourseInstructor::create([
             'title'=>$request->title,
             'course_id'=>$request->course_id,
@@ -92,6 +101,26 @@ class CourseInstructorController extends Controller
                 'message'=>'courseInstructor not found'
             ],404);
         }
+
+        //making sure that instructor cant be assigned to the same course twice
+        $course_id=$request->course_id;
+        $instructor_id=$request->instructor_id;
+        $instructor_is_assigned=CourseInstructor::where('course_id',$course_id)->where('instructor_id',$instructor_id)->first();
+        
+        if($course_id==$courseInstructor->course_id && $instructor_id==$courseInstructor->instructor_id && $request->title==$courseInstructor->title){
+            return response([
+                'message'=>'no updates done',
+                'data'=>$courseInstructor
+            ],400);
+        }
+        
+        if($instructor_is_assigned&& $request->title==$courseInstructor->title){
+            return response([
+                'message'=>'this instructor is already assigned to this course',
+                'data'=>$instructor_is_assigned
+            ],400);
+        }
+
         $courseInstructor->update([
             'title'=>$request->title,
             'course_id'=>$request->course_id,

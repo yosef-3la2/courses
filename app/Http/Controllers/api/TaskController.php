@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\CourseInstructor;
 use App\Models\CourseStudent;
 use App\Models\Session;
+use App\Models\Submission;
 use App\Models\Task;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,7 @@ class TaskController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('instructor')->except(['index']);
+        $this->middleware('instructor')->except(['index','show']);
     }
 
 
@@ -52,14 +53,51 @@ class TaskController extends Controller
         }
         
         
+       
+        
         
         return response([
             'message'=>'tasks retreived successfully',
-            'data'=>$tasks
+            'data'=>$tasks,
         ],200);
+    }
+
+    public function show($id){
 
         
+        $user=auth()->user();
+        if($user->role=='admin'){
+            $task=Task::find($id);
+        }elseif($user->role=='instructor'){
+            $task=task::where('instructor_id',$user->id)->find($id);
+        }else{
+            $coursestudent=CourseStudent::where('student_id',$user->id)->get();
+            if($coursestudent->isEmpty()){
+                return response([
+                    'message'=>'you didnt enroll in any course ',
+                    'data'=>null
+                ],400);  
+            }
 
+            $courseIds = $coursestudent->pluck('course_id')->toArray();
+            $instructorIds = $coursestudent->pluck('instructor_id')->toArray();
+            $task=task::wherein('course_id',$courseIds)->wherein('instructor_id', $instructorIds)->find($id);
+        }
+        if(!$task){
+
+            return response([
+                'message'=>'task not found '
+            ],400);  
+            }
+        
+        $num_of_submissions = Submission::where('task_id', $task->id)->count();
+        
+        
+        return response([
+            'message'=>'task retreived successfully',
+            'data'=>$task,
+            '#_submissions'=>$num_of_submissions,
+        ],200);
     }
 
 

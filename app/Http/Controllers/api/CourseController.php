@@ -41,13 +41,15 @@ class CourseController extends Controller
         $request->validate([
             'title'=>'required|string|max:20|min:2',
             'description'=>'required|string|min:5',
-            'price'=>'numeric|required'
+            'price'=>'numeric|required',
+            'duration'=>'required|string'
         ]);
 
         $course=Course::create([
             'title'=>$request->title,
             'description'=>$request->description,
-            'price'=>$request->price
+            'price'=>$request->price,
+            'duration'=>$request->duration
         ]);
 
         return response([
@@ -61,7 +63,8 @@ class CourseController extends Controller
         $request->validate([
             'title'=>'required|string|max:20|min:2',
             'description'=>'required|string|min:5',
-            'price'=>'numeric|required'
+            'price'=>'numeric|required',
+            'duration'=>'required|string'
         ]);
 
         $course=Course::find($id);
@@ -74,7 +77,8 @@ class CourseController extends Controller
         $course->update([
             'title'=>$request->title,
             'description'=>$request->description,
-            'price'=>$request->price
+            'price'=>$request->price,
+            'duration'=>$request->duration
         ]);
         return response([
             'message'=>'course updated successfully',

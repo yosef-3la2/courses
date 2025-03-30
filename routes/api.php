@@ -3,6 +3,7 @@
 use App\Http\Controllers\api\CourseController;
 use App\Http\Controllers\api\CourseInstructorController;
 use App\Http\Controllers\api\CourseStudentController;
+use App\Http\Controllers\api\QuizController;
 use App\Http\Controllers\api\SessionController;
 use App\Http\Controllers\api\SubmissionController;
 use App\Http\Controllers\api\TaskController;
@@ -33,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('showadmins',[UserController::class,'showadmins']);
         Route::get('showstudents',[UserController::class,'showstudents']);
         Route::get('showinstructors',[UserController::class,'showinstructors']);
+        Route::delete('deleteaccount/{id}',[UserController::class,'deleteaccount']);
     
     });
 
@@ -77,8 +79,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('tasks/')->group(function(){
         route::get('',[TaskController::class,'index']);
         route::post('',[TaskController::class,'store']);
+        route::get('/{id}',[TaskController::class,'show']);
         route::post('/{id}',[TaskController::class,'update']);
         route::delete('/{id}',[TaskController::class,'destroy']);
+    });
+
+
+
+    //quizzes
+    Route::prefix('quizzes/')->group(function(){
+        route::get('',[QuizController::class,'index']);
+        route::post('',[QuizController::class,'store']);
+        route::post('/{id}',[QuizController::class,'update']);
+        route::delete('/{id}',[QuizController::class,'destroy']);
     });
 
 

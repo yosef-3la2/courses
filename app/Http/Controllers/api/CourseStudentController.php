@@ -62,7 +62,16 @@ class CourseStudentController extends Controller
             ],400);
         }
 
-       
+
+
+        //making sure student cant be assigned to the same course with the same instructor
+        $course_id=$request->course_id;
+        $student_is_assigned=CourseStudent::where('course_id',$course_id)->where('instructor_id',$instructorid)->first();
+       if($student_is_assigned){
+           return response([
+               'message'=>'this student is already assigned to this course',
+               'data'=>$student_is_assigned
+           ],400);}
 
         $coursestudent=CourseStudent::create([
             'name'=>$request->name,
@@ -72,7 +81,7 @@ class CourseStudentController extends Controller
         ]);
 
         return response([
-            'message'=>'course created successfully',
+            'message'=>'student has been enrolled to this course created successfully',
             'data'=>$coursestudent
         ],201);
     }
@@ -109,6 +118,33 @@ class CourseStudentController extends Controller
                 'message'=>'coursestudent not found'
             ],404);
         }
+
+
+        //student cant be assigned to the same course with the same instructor
+        $course_id=$request->course_id;
+        $student_is_assigned=CourseStudent::where('course_id',$course_id)->where('instructor_id',$instructorid)->first();
+       
+        $name=$request->name;
+
+        if($course_id==$coursestudent->course_id &&
+         $instructorid==$coursestudent->instructor_id &&
+          $name ==$coursestudent->name &&
+          $studentid==$coursestudent->student_id){
+            return response([
+                'message'=>'no updates done',
+                'data'=>$coursestudent
+            ],400);
+        }
+       
+        if($student_is_assigned&&
+          $name==$coursestudent->name ){
+           return response([
+               'message'=>'this student is already assigned to this course',
+               'data'=>$student_is_assigned
+           ],400);
+        }
+
+
         $coursestudent->update([
             'name'=>$request->name,
             'course_id'=>$request->course_id,

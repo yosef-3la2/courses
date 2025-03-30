@@ -98,6 +98,25 @@ class UserController extends Controller
         ],200);
     }
     
-    
+    public function deleteaccount(Request $request ,$id){
+
+        $user=User::find($id);
+        if(!$user){
+            return response(['message'=>'user not found'],404);
+        }
+
+        if(!$request->has('confirm')||!$request->boolean('confirm')){
+            return response([
+                'message'=>"Are you sure u want to delete this user",
+                'data'=>$user,
+                'confirm'=>true
+            ],200);
+        }
+
+        $user->delete();
+        return response([
+            'message'=>'user deleted successfully'
+        ],200);
+    }
     
 }

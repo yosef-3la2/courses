@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Models\CourseStudent;
 use App\Models\Submission;
 use App\Models\Task;
 use Illuminate\Http\Request;
-use Mockery\Matcher\Subset;
 
 class SubmissionController extends Controller
 {
@@ -90,7 +90,6 @@ class SubmissionController extends Controller
         
         
         
-
         
         $link=$request->link;
         if(!$request->file('file') && !$link){
@@ -98,17 +97,35 @@ class SubmissionController extends Controller
                 'message'=>'One of the fields is required'
             ],400);
         }
-
-
-
-
+        
+        $coursestudent=CourseStudent::where('student_id',$user->id)->get();
+        $courseIds = $coursestudent->pluck('course_id')->toArray();
+        $instructorIds = $coursestudent->pluck('instructor_id')->toArray();
+        $tasks=task::wherein('course_id',$courseIds)->wherein('instructor_id', $instructorIds)->pluck('id');
+        
+        
         $task=Task::where('id',$request->task_id)->first();
         if(!$task){
             return response(['message'=>'task not found'],404);
         }
+        
+        if(!$tasks->contains($request->task_id)){
+            return response()->json([
+                'message' => 'invalid task'
+            ], 403);
+            
+        }
+        
 
 
-
+        if ($task->deadline && now()->greaterThan($task->deadline)) {
+            return response([
+                'message' => 'Deadline for this task has passed.'
+            ], 400);
+        }
+        
+        
+        
         
         $submission=Submission::create([
             'task_id'=>$request->task_id,
@@ -165,17 +182,22 @@ class SubmissionController extends Controller
             ],400);
         }
 
-
-
-
-        
-        
         
         $user = auth()->user();
 
 
         if($submission->student_id!==$user->id){
             return response(['message'=>'this is not ur submission , u cant edit it'],403);
+        }
+
+
+        
+        $task=Task::where('id',$submission->task_id)->first();
+        
+        if ($task->deadline && now()->greaterThan($task->deadline)) {
+            return response([
+                'message' => 'Deadline for this task has passed.'
+            ], 400);
         }
 
 

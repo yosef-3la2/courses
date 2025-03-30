@@ -5,15 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Course extends Model
+class Quiz extends Model
 {
-    protected $fillable=[
+    protected $fillable = [
         'title',
-        'description',
-        'price',
-        'duration'
-    ];
-    
+         'about',
+         'course_id',
+         'instructor_id',
+         'quiz_datetime',
+         'duration',
+         'link',
+        ];
     protected $hidden = ['created_at', 'updated_at'];
     use HasFactory;
 }
