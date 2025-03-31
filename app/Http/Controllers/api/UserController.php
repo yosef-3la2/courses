@@ -5,7 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -117,6 +117,50 @@ class UserController extends Controller
         return response([
             'message'=>'user deleted successfully'
         ],200);
+    }
+
+
+    public function update(request $request){
+
+        $user=Auth::user();
+
+        $request->validate([
+            'first_name' => 'required|string|min:3',
+            'last_name' => 'required|string|min:3',
+            'address' => 'required|string',
+            'phone' => 'required|string|min:10',
+        ]);
+    
+        // Prepare updated data
+        
+        
+        
+        // Check if there are actual changes
+        if ($request->first_name==$user->first_name &&
+        $request->last_name==$user->last_name &&
+        $request->address==$user->address &&
+        $request->phone==$user->phone
+        
+        ) {
+            return response()->json(['message' => 'No updates were made'], 200);
+        }
+
+        
+        // Update user details
+        
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        $user->address = $request->address;
+        $user->phone = $request->phone;
+        
+        $user->save();
+    
+        return response()->json([
+            'message' => 'User updated successfully',
+            'user' => $user
+        ], 200);
+
+
     }
     
 }
