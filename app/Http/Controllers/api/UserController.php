@@ -85,7 +85,7 @@ class UserController extends Controller
         $instructors = User::where('role', 'instructor')->get();
         return response([
             'message'=>'instructors retreived successfully',
-            'admins'=>$instructors
+            'instructors'=>$instructors
         ],200);
     }
     
@@ -94,7 +94,15 @@ class UserController extends Controller
         $students = User::where('role', 'student')->get();
         return response([
             'message'=>'students retreived successfully',
-            'admins'=>$students
+            'students'=>$students
+        ],200);
+    }
+
+    public function showallusers(){
+        $students = User::all();
+        return response([
+            'message'=>'students retreived successfully',
+            'students'=>$students
         ],200);
     }
     

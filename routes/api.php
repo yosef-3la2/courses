@@ -35,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('showadmins',[UserController::class,'showadmins']);
         Route::get('showstudents',[UserController::class,'showstudents']);
         Route::get('showinstructors',[UserController::class,'showinstructors']);
+        Route::get('showallusers',[UserController::class,'showallusers']);
         Route::delete('deleteaccount/{id}',[UserController::class,'deleteaccount']);
     
     });

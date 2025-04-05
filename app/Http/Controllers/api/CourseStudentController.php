@@ -66,7 +66,7 @@ class CourseStudentController extends Controller
 
         //making sure student cant be assigned to the same course with the same instructor
         $course_id=$request->course_id;
-        $student_is_assigned=CourseStudent::where('course_id',$course_id)->where('instructor_id',$instructorid)->first();
+        $student_is_assigned=CourseStudent::where('course_id',$course_id)->first();
        if($student_is_assigned){
            return response([
                'message'=>'this student is already assigned to this course',
@@ -122,7 +122,7 @@ class CourseStudentController extends Controller
 
         //student cant be assigned to the same course with the same instructor
         $course_id=$request->course_id;
-        $student_is_assigned=CourseStudent::where('course_id',$course_id)->where('instructor_id',$instructorid)->first();
+        $student_is_assigned=CourseStudent::where('course_id',$course_id)->first();
        
         $name=$request->name;
 
@@ -136,8 +136,7 @@ class CourseStudentController extends Controller
             ],400);
         }
        
-        if($student_is_assigned&&
-          $name==$coursestudent->name ){
+        if($student_is_assigned){
            return response([
                'message'=>'this student is already assigned to this course',
                'data'=>$student_is_assigned
