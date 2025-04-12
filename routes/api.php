@@ -1,13 +1,17 @@
 <?php
 
 use App\Http\Controllers\api\CourseController;
+use App\Http\Controllers\api\CourseFeedbackController;
 use App\Http\Controllers\api\CourseInstructorController;
 use App\Http\Controllers\api\CourseStudentController;
+use App\Http\Controllers\api\InstructorFeedbackController;
 use App\Http\Controllers\api\QuizController;
+use App\Http\Controllers\api\SessionCommentController;
 use App\Http\Controllers\api\SessionController;
 use App\Http\Controllers\api\SubmissionController;
 use App\Http\Controllers\api\TaskController;
 use App\Http\Controllers\api\UserController;
+use App\Models\InstructorFeedback;
 use Illuminate\Support\Facades\Route;
 
 
@@ -18,7 +22,10 @@ Route::prefix('courses/')->group(function(){
     route::get('/{id}',[CourseController::class,'show']);
 });
 
-
+// i can view course feedbacks if im not auhtenticated
+Route::prefix('instructorfeedback/')->group(function(){
+route::get('',[InstructorFeedbackController::class,'index']);
+});
 
 //login page
 Route::post('login',[UserController::class,'login']);
@@ -105,5 +112,31 @@ Route::middleware('auth:sanctum')->group(function () {
         route::post('/{id}',[SubmissionController::class,'update']);
         route::delete('/{id}',[SubmissionController::class,'destroy']);
     });
+
+
+
+    //instructor feedback
+    Route::prefix('instructorfeedback/')->group(function(){
+        route::get('',[InstructorFeedbackController::class,'index']);
+        route::post('',[InstructorFeedbackController::class,'store'])->middleware('student');
+        route::delete('/{id}',[InstructorFeedbackController::class,'destroy'])->middleware('student');
+    });
+
+
+    //course feedback
+    Route::prefix('coursefeedback/')->group(function(){
+        route::get('',[CourseFeedbackController::class,'index']);
+        route::post('',[CourseFeedbackController::class,'store'])->middleware('student');
+        route::delete('/{id}',[CourseFeedbackController::class,'destroy'])->middleware('student');
+    });
+
+
+    //session comment
+    Route::prefix('sessioncomment/')->group(function(){
+        route::get('',[SessionCommentController::class,'index']);
+        route::post('',[SessionCommentController::class,'store'])->middleware('StudentOrInstructor');
+        route::delete('/{id}',[SessionCommentController::class,'destroy'])->middleware('StudentOrInstructor');
+    });
+        
 
 });
